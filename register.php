@@ -44,7 +44,6 @@ if (isset($_POST['register'])) {
     }
 }
 ?>
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,8 +64,9 @@ if (isset($_POST['register'])) {
 
         <label for="email">電子郵件：</label>
         <input type="email" name="email" id="email" required><br>
-
+		<button type="button" onclick="window.location.href='index.php';">返回</button>
         <button type="submit" name="register">註冊</button>
+		
     </form>
 </body>
 </html>
