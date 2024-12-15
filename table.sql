@@ -8,19 +8,39 @@ CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `is_admin` tinyint(1) DEFAULT '0',
+  `is_admin` tinyint(1) DEFAULT '0', -- 檢查是不是管理員 如果是的話轉移到admin.php畫面
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `email` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO users(username,password,is_admin,email) VALUES
+(11124235,'Zx0920520',1,'zx0989030601@gmail.com');
 
 DROP TABLE IF EXISTS `unserved_orders`;
 CREATE TABLE `unserved_orders` (
   `food_name` varchar(255) NOT NULL,
   `quantity` int NOT NULL,
   `id` int NOT NULL AUTO_INCREMENT,
+  `table_number` enum('1','2','3') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `served_orders`;
+CREATE TABLE `served_orders` (
+  `food_name` varchar(255) NOT NULL,
+  `quantity` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `order_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `table_number` enum('1','2','3') NOT NULL,
+  `is_delivered` BOOLEAN DEFAULT 0, -- 0代表未送達，1代表已送達
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO unserved_orders (food_name, quantity, table_number) VALUES 
+('烤雞腿', 1, 1);
+
+
 
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
@@ -61,3 +81,18 @@ INSERT INTO menu(food_name, price) VALUES
 ('韓式泡菜炒飯', 0),
 ('炒時蔬米粉', 0),
 ('泰式生菜包', 0);
+
+
+CREATE TABLE tables (
+    table_number INT PRIMARY KEY,
+    status ENUM('vacant', 'reserved', 'occupied') DEFAULT 'vacant',
+    reservation_time DATETIME,
+    check_in_time DATETIME,
+    diners_count INT DEFAULT 0,
+    total_amount DECIMAL(10, 2) DEFAULT 0
+);
+
+INSERT INTO tables (table_number, status, reservation_time, check_in_time)
+VALUES (1, 'occupied', NULL, '2024-12-15 19:00:00'),
+       (2, 'reserved', '2024-12-15 18:00:00', NULL),
+       (3, 'vacant', NULL, NULL);
