@@ -22,7 +22,7 @@ CREATE TABLE `unserved_orders` (
   `food_name` varchar(255) NOT NULL,
   `quantity` int NOT NULL,
   `id` int NOT NULL AUTO_INCREMENT,
-  `table_number` enum('1','2','3') NOT NULL,
+  `table_number` int(2) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -32,7 +32,7 @@ CREATE TABLE `served_orders` (
   `quantity` int NOT NULL,
   `id` int NOT NULL AUTO_INCREMENT,
   `order_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `table_number` enum('1','2','3') NOT NULL,
+  `table_number` int(2) NOT NULL,
   `is_delivered` BOOLEAN DEFAULT 0, -- 0代表未送達，1代表已送達
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
