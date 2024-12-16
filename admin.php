@@ -1,6 +1,4 @@
 <?php
-// 客人打電話訂位的介面(電話號碼 貴姓)
-// 結帳後將桌子顏色改為綠色 並清空資料
 session_start();
 require 'db_connection.php'; // 確保包含資料庫連線檔案
 
@@ -80,6 +78,9 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
 
             if ($class === 'yellow') {
                 echo "<br>訂位時間：{$table['reservation_time']}";
+            }
+			if ($class === 'red') {
+                echo "<br>入桌時間：{$table['check_in_time']}";
             }
             if ($class === 'red' && needsAttention($table['table_number'], $conn)) {
                 echo "<div class='dot'></div>"; // 提醒紅點
