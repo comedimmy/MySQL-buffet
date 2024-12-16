@@ -1,9 +1,6 @@
 <?php
 session_start();
-// 設置剩餘時間（例如 90 分鐘 = 5400 秒）
-if (!isset($_SESSION['remaining_time'])) {
-    $_SESSION['remaining_time'] = 5400; // 90 分鐘
-}
+
 
 if (isset($_GET['table_number'])) {
     $tableNumber = intval($_GET['table_number']); // 確保桌號是整數
@@ -68,6 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['serve_all'])) {
     }
 }
 
+	$stmt = $conn->prepare("SELECT check_in_time FROM tables WHERE table_number = ?");
+	$stmt->bind_param('i', $tableNumber);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	
+	if ($row = $result->fetch_assoc()) {
+		$checkInTime = $row['check_in_time'];
+	} else {
+		echo "無法找到該桌的資料";
+		exit();
+	}
+
 // 讀取菜單資料
 $menuResult = $conn->query("SELECT * FROM menu");
 
@@ -87,13 +96,17 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] > 0) {
     $canOrder = false; // 禁止點餐
 }
 
-$conn->close();
 
 // 確認剩餘時間
 if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
     echo "時間已到，無法提交訂單！";
     exit();
 }
+
+
+
+
+
 ?>
 <html lang="en">
 <head>
@@ -116,7 +129,7 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
             margin-top: 20px;
         }
 
-        #timer {
+        .timer {
             font-size: 1.5em;
             color: red;
             margin-bottom: 20px;
@@ -264,27 +277,63 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 
         let remainingTime = <?= $_SESSION['remaining_time'] ?>;
 
-        function updateTimer() {
-            const timerLabel = document.getElementById("timer");
-            if (remainingTime > 0) {
-                remainingTime--;
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
-                timerLabel.textContent = `剩餘時間: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            } else {
-                timerLabel.textContent = "時間已到，無法再點餐！";
-                document.querySelectorAll("button.order-btn").forEach(button => button.disabled = true);
-                clearInterval(timerInterval);
-            }
-        }
+				document.addEventListener('DOMContentLoaded', function () {
+			const checkInTime = new Date("<?= $checkInTime ?>").getTime(); // 開始時間
+			const countDownDuration = 13 * 60 * 1000; // 總倒計時 (90 分鐘)
+		
+			// 初始化倒計時
+			function updateCountdown() {
+				const now = new Date().getTime(); // 當前時間
+				const elapsed = now - checkInTime; // 已過時間
+				const remaining = countDownDuration - elapsed; // 剩餘時間
+		
+				if (remaining >= 0) {
+					const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); // 計算小時
+					const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60)); // 計算分鐘
+					const seconds = Math.floor((remaining % (1000 * 60)) / 1000); // 計算秒數
+		
+					// 更新倒數計時顯示
+					document.getElementById('countdown').textContent = `${hours} 小時 ${minutes} 分 ${seconds} 秒`;
+		
+					// 當剩餘時間小於等於 30 分鐘時禁止點餐
+					if (remaining <= 30 * 60 * 1000) {
+						if (typeof canOrder === 'undefined' || canOrder) {
+							canOrder = false;  // 禁止點餐
+							document.getElementById('countdown').textContent = "時間已超過，無法點餐";
+							alert("時間已超過，無法點餐！");
 
-        const timerInterval = setInterval(updateTimer, 1000);
+						}
+					}
+		
+				} else {
+					document.getElementById('countdown').textContent = "已超過倒計時限制！";
+					clearInterval(timer); // 停止倒數計時
+		
+					// 當倒計時結束時更新資料庫，重置桌號
+					fetch('reset_table.php', { method: 'POST' })
+						.then(response => response.json())
+						.then(data => {
+							if (data.success) {
+								alert("倒計時結束，該桌已重置,請至櫃檯結帳");
+							} else {
+								alert("重置失敗，請稍後再試！");
+							}
+						});
+				}
+			}
+		
+			updateCountdown(); // 初始化倒計時
+			const timer = setInterval(updateCountdown, 1000); // 每秒更新
+		});
+
+
     </script>
+	
 </head>
 
 <body>
     <h1>吃到飽點餐系統</h1>
-    <h2 id="timer">剩餘時間: 90:00</h2>
+    <p class="timer">用餐剩餘時間：<span id="countdown"></span></p>
 
     <div class="container">
         <!-- 左側: 菜單 -->
