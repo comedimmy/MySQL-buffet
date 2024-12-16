@@ -1,4 +1,6 @@
 <?php
+// 客人打電話訂位的介面(電話號碼 貴姓)
+// 結帳後將桌子顏色改為綠色 並清空資料
 session_start();
 require 'db_connection.php'; // 確保包含資料庫連線檔案
 
