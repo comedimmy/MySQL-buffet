@@ -275,56 +275,69 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
             }
         }
 
-        let remainingTime = <?= $_SESSION['remaining_time'] ?>;
+       
+				// 倒數計時的邏輯
+       document.addEventListener('DOMContentLoaded', function () {
+            const checkInTime = new Date("<?= $checkInTime ?>").getTime(); // 從 PHP 獲取 check_in_time
+            const countDownDuration = 1* 10 * 1000; // 90 分鐘 (毫秒)
 
-				document.addEventListener('DOMContentLoaded', function () {
-			const checkInTime = new Date("<?= $checkInTime ?>").getTime(); // 開始時間
-			const countDownDuration = 13 * 60 * 1000; // 總倒計時 (90 分鐘)
-		
-			// 初始化倒計時
-			function updateCountdown() {
-				const now = new Date().getTime(); // 當前時間
-				const elapsed = now - checkInTime; // 已過時間
-				const remaining = countDownDuration - elapsed; // 剩餘時間
-		
-				if (remaining >= 0) {
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const elapsed = now - checkInTime;
+                const remaining = countDownDuration - elapsed;
+
+                if (remaining > 0) {
 					const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); // 計算小時
-					const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60)); // 計算分鐘
-					const seconds = Math.floor((remaining % (1000 * 60)) / 1000); // 計算秒數
-		
-					// 更新倒數計時顯示
-					document.getElementById('countdown').textContent = `${hours} 小時 ${minutes} 分 ${seconds} 秒`;
-		
-					// 當剩餘時間小於等於 30 分鐘時禁止點餐
-					if (remaining <= 30 * 60 * 1000) {
-						if (typeof canOrder === 'undefined' || canOrder) {
-							canOrder = false;  // 禁止點餐
-							document.getElementById('countdown').textContent = "時間已超過，無法點餐";
-							alert("時間已超過，無法點餐！");
+                    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60)); //分鐘
+                    const seconds = Math.floor((remaining % (1000 * 60)) / 1000); //秒
 
-						}
-					}
-		
-				} else {
-					document.getElementById('countdown').textContent = "已超過倒計時限制！";
-					clearInterval(timer); // 停止倒數計時
-		
-					// 當倒計時結束時更新資料庫，重置桌號
-					fetch('reset_table.php', { method: 'POST' })
-						.then(response => response.json())
-						.then(data => {
-							if (data.success) {
-								alert("倒計時結束，該桌已重置,請至櫃檯結帳");
-							} else {
-								alert("重置失敗，請稍後再試！");
-							}
+                    document.getElementById('countdown').textContent = `${hours} 小時 ${minutes} 分 ${seconds} 秒`;
+                } else{
+                    document.getElementById('countdown').textContent = "已超過 90 分鐘！";
+
+					
+					// 隱藏按鈕
+						const selectButtons = document.querySelectorAll('button[onclick^="showModal"]'); // 選擇按鈕
+						const serveAllButton = document.querySelector('button[name="serve_all"]'); // 全部出餐按鈕
+				
+						selectButtons.forEach(button => {
+							button.style.display = 'none'; // 隱藏選擇按鈕
 						});
+				
+						if (serveAllButton) {
+							serveAllButton.style.display = 'none'; // 隱藏全部出餐按鈕
+						}
+					
+							window.location.href = "Check_out.php";
+                }
+				
+				if (remaining <= 30 * 60 * 1000) { // 剩餘時間 <= 30 分鐘
+					if (typeof canOrder === 'undefined' || canOrder) { // 若尚未執行過
+						canOrder = false;  // 禁止點餐
+				
+						// 隱藏按鈕
+						const selectButtons = document.querySelectorAll('button[onclick^="showModal"]'); // 選擇按鈕
+						const serveAllButton = document.querySelector('button[name="serve_all"]'); // 全部出餐按鈕
+				
+						selectButtons.forEach(button => {
+							button.style.display = 'none'; // 隱藏選擇按鈕
+						});
+				
+						if (serveAllButton) {
+							serveAllButton.style.display = 'none'; // 隱藏全部出餐按鈕
+						}
+				
+						document.getElementById('countdown').textContent = "時間已超過，無法點餐";
+						alert("時間已超過60分，無法進行點餐！");
+					}
 				}
-			}
-		
-			updateCountdown(); // 初始化倒計時
-			const timer = setInterval(updateCountdown, 1000); // 每秒更新
-		});
+				
+            }
+			
+
+            updateCountdown(); // 初次調用
+            const timer = setInterval(updateCountdown, 1000); // 每秒更新一次
+        });
 
 
     </script>
