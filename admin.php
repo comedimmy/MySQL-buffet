@@ -7,6 +7,8 @@ $stmt = $conn->prepare("SELECT table_number, status, reservation_time, check_in_
 $stmt->execute();
 $result = $stmt->get_result();
 $tables = $result->fetch_all(MYSQLI_ASSOC);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,12 +55,28 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
             top: -5px;
             right: -5px;
         }
+        /* 返回按鈕樣式 */
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>服務生介面</h1>
+
+    <!-- 顯示每桌客人的入座時間（如果有） -->
     <?php
-    // 顯示每桌客人的入座時間（如果有）
     foreach ($tables as $table) {
         if ($table['status'] === 'occupied' && $table['check_in_time']) {
             echo "<p>桌號 {$table['table_number']} 入座時間：{$table['check_in_time']}</p>";
@@ -79,7 +97,7 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
             if ($class === 'yellow') {
                 echo "<br>訂位時間：{$table['reservation_time']}";
             }
-			if ($class === 'red') {
+            if ($class === 'red') {
                 echo "<br>入桌時間：{$table['check_in_time']}";
             }
             if ($class === 'red' && needsAttention($table['table_number'], $conn)) {
@@ -90,11 +108,16 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
         ?>
     </div>
 
+    <!-- 返回按鈕 -->
+    <a href="index.php">
+        <button class="back-button">返回首頁</button>
+    </a>
+
     <script>
         // 點擊跳轉桌位頁面
         function redirectToTable(tableNumber) {
-			window.location.href = `table_management.php?table_number=${tableNumber}`;
-		}
+            window.location.href = `table_management.php?table_number=${tableNumber}`;
+        }
     </script>
 </body>
 </html>
