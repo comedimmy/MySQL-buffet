@@ -96,3 +96,10 @@ INSERT INTO tables (table_number, status, reservation_time, check_in_time)
 VALUES (1, 'occupied', NULL, '2024-12-15 19:00:00'),
        (2, 'reserved', '2024-12-15 18:00:00', NULL),
        (3, 'vacant', NULL, NULL);
+       (4, 'vacant', NULL, NULL);
+       (5, 'vacant', NULL, NULL);
+       (6, 'vacant', NULL, NULL);
+       (7, 'vacant', NULL, NULL);
+       (8, 'vacant', NULL, NULL);
+       (9, 'vacant', NULL, NULL);
+       (10, 'vacant', NULL, NULL);
