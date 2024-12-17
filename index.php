@@ -6,7 +6,7 @@ require 'db_connection.php'; // 確保包含資料庫連線檔案
 //if (isset($_SESSION['user_id'])&&$user['is_admin'] == 0) {
 //    header('Location: order.php');
 //    exit();
-//}
+//
 
 // 處理登入請求
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
