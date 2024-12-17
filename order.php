@@ -65,17 +65,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['serve_all'])) {
     }
 }
 
-	$stmt = $conn->prepare("SELECT check_in_time FROM tables WHERE table_number = ?");
-	$stmt->bind_param('i', $tableNumber);
-	$stmt->execute();
-	$result = $stmt->get_result();
-	
-	if ($row = $result->fetch_assoc()) {
-		$checkInTime = $row['check_in_time'];
+$stmt = $conn->prepare("SELECT id, food_name, quantity FROM unserved_orders WHERE table_number = ?");
+$stmt->bind_param('i', $tableNumber);
+$stmt->execute();
+$result = $stmt->get_result();
+$orders = $result->fetch_all(MYSQLI_ASSOC);
+
+	// 處理移除訂單的請求
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_order'])) {
+	$orderId = $_POST['order_id'];
+
+	// 刪除未出餐訂單
+	$deleteStmt = $conn->prepare("DELETE FROM unserved_orders WHERE id = ?");
+	$deleteStmt->bind_param('i', $orderId);
+	if ($deleteStmt->execute()) {
+		echo "訂單已移除！";
+		// 刪除後重新載入頁面
 	} else {
-		echo "無法找到該桌的資料";
-		exit();
+		echo "刪除訂單失敗：" . $deleteStmt->error;
 	}
+}
+
+
+$stmt = $conn->prepare("SELECT check_in_time FROM tables WHERE table_number = ?");
+$stmt->bind_param('i', $tableNumber);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($row = $result->fetch_assoc()) {
+	$checkInTime = $row['check_in_time'];
+} else {
+	echo "無法找到該桌的資料";
+	exit();
+}
 
 // 讀取菜單資料
 $menuResult = $conn->query("SELECT * FROM menu");
@@ -279,7 +301,7 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 				// 倒數計時的邏輯
        document.addEventListener('DOMContentLoaded', function () {
             const checkInTime = new Date("<?= $checkInTime ?>").getTime(); // 從 PHP 獲取 check_in_time
-            const countDownDuration = 1* 10 * 1000; // 90 分鐘 (毫秒)
+            const countDownDuration = 90* 60 * 1000; // 90 分鐘 (毫秒)
 
             function updateCountdown() {
                 const now = new Date().getTime();
@@ -375,15 +397,20 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
             <h2>未出餐訂單</h2>
             <table>
                 <tr>
-                    <th>訂單 ID</th>
                     <th>餐點名稱</th>
                     <th>數量</th>
+					<th>操作</th>
                 </tr>
                 <?php while ($row = $unservedResult->fetch_assoc()): ?>
                 <tr>
-                    <td><?= htmlspecialchars($row['id']) ?></td>
                     <td><?= htmlspecialchars($row['food_name']) ?></td>
                     <td><?= htmlspecialchars($row['quantity']) ?></td>
+					<td>
+						<form method="POST">
+							<input type="hidden" name="order_id" value="<?= $row['id'] ?>">
+							<button type="submit" name="remove_order">移除</button>
+						</form>
+					</td>
                 </tr>
                 <?php endwhile; ?>
             </table>
@@ -397,14 +424,12 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
             <h2>已出餐訂單</h2>
             <table>
                 <tr>
-                    <th>訂單 ID</th>
                     <th>餐點名稱</th>
                     <th>數量</th>
                     <th>出餐時間</th>
                 </tr>
                 <?php while ($row = $servedResult->fetch_assoc()): ?>
                 <tr>
-                    <td><?= htmlspecialchars($row['id']) ?></td>
                     <td><?= htmlspecialchars($row['food_name']) ?></td>
                     <td><?= htmlspecialchars($row['quantity']) ?></td>
                     <td><?= htmlspecialchars($row['order_at']) ?></td>
