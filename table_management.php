@@ -1,9 +1,9 @@
 <?php
 session_start();
-require 'db_connection.php'; // 確保包含資料庫連線檔案
+require 'db_connection.php'; 
 
 // 確保有桌號參數
-if (!isset($_GET['table_number']) || !in_array($_GET['table_number'], [1, 2, 3])) {
+if (!isset($_GET['table_number']) || !in_array($_GET['table_number'], [1,2,3,4,5,6,7,8,9,10])) {
     echo "無效的桌號";
     exit();
 }
@@ -17,10 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_diners'])) {
 
 	$_SESSION['message'] = "設置成功！該桌人數 {$diners} 人，每人399，應收金額為 NT$ {$totalAmount}";
     // 更新該桌的用餐狀況和人數
-    $stmt = $conn->prepare("UPDATE tables SET status = 'occupied', diners_count = ?, total_amount = ? WHERE table_number = ?");
+    $stmt = $conn->prepare("UPDATE tables SET status = 'occupied', diners_count = ?, total_amount = ?,check_in_time=now() WHERE table_number = ? ");
     $stmt->bind_param('iii', $diners, $totalAmount, $tableNumber);
     if ($stmt->execute()) {
-        header("Location: table_number_{$tableNumber}.php?table_number={$tableNumber}");
+        header("Location: table_management.php?table_number={$tableNumber}");
         exit(); // 重定向後退出，避免再執行後續代碼
     } else {
         echo "設置失敗，請稍後重試。";
@@ -39,6 +39,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="refresh" content="60"> <!-- 每60秒刷新一次頁面 -->
     <title>桌號 <?= $tableNumber ?> 管理頁面</title>
 </head>
 <body>
