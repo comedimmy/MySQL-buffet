@@ -1,8 +1,8 @@
 <?php
 session_start();
-require 'db_connection.php'; // 確保包含資料庫連線檔案
+require 'db_connection.php'; // 連資料庫
 
-// 檢索所有桌位狀態
+// 查詢所有桌位狀態
 $stmt = $conn->prepare("SELECT table_number, status, reservation_time, check_in_time FROM tables ORDER BY table_number");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -75,7 +75,7 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
 <body>
     <h1>服務生介面</h1>
 
-    <!-- 顯示每桌客人的入座時間（如果有） -->
+    <!-- 顯示每桌客人的入座時間-->
     <?php
     foreach ($tables as $table) {
         if ($table['status'] === 'occupied' && $table['check_in_time']) {
@@ -114,7 +114,7 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
     </a>
 
     <script>
-        // 點擊跳轉桌位頁面
+        // 點擊跳到桌位管理頁面
         function redirectToTable(tableNumber) {
             window.location.href = `table_management.php?table_number=${tableNumber}`;
         }
