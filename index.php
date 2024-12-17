@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'db_connection.php'; // 確保包含資料庫連線檔案
+require 'db_connection.php'; // 連資料庫
 
 //檢查是否已登入
 //if (isset($_SESSION['user_id'])&&$user['is_admin'] == 0) {
