@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-
 if (isset($_GET['table_number'])) {
     $tableNumber = intval($_GET['table_number']); // 確保桌號是整數
     $_SESSION['table_number'] = $tableNumber; // 將桌號存入 session
@@ -14,6 +13,9 @@ if (isset($_GET['table_number'])) {
 $tableNumber = $_SESSION['table_number'];
 // 連接資料庫
 require 'db_connection.php';
+
+
+	
 
 // 處理提交訂單
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_food'])) {
