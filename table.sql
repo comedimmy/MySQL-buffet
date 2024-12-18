@@ -82,7 +82,7 @@ INSERT INTO menu(food_name, price) VALUES
 ('炒時蔬米粉', 0),
 ('泰式生菜包', 0);
 
-
+DROP TABLE IF EXISTS `tables`;
 CREATE TABLE tables (
     table_number INT PRIMARY KEY,
     status ENUM('vacant', 'reserved', 'occupied') DEFAULT 'vacant',
@@ -91,7 +91,7 @@ CREATE TABLE tables (
     diners_count INT DEFAULT 0,
     total_amount DECIMAL(10, 2) DEFAULT 0,
     Last_name varchar(255) DEFAULT '',
-    phone_number INT DEFAULT '0900-000000'
+    phone_number VARCHAR(15) DEFAULT '0900-000000'
 );
 
 INSERT INTO tables (table_number, status, reservation_time, check_in_time)
@@ -104,4 +104,4 @@ VALUES (1, 'occupied', NULL, '2024-12-15 19:00:00'),
        (7, 'vacant', NULL, NULL),
        (8, 'vacant', NULL, NULL),
        (9, 'vacant', NULL, NULL),
-       (10, 'vacant', NULL, NULL),
+       (10, 'vacant', NULL, NULL);
