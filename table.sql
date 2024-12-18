@@ -89,7 +89,9 @@ CREATE TABLE tables (
     reservation_time DATETIME,
     check_in_time DATETIME,
     diners_count INT DEFAULT 0,
-    total_amount DECIMAL(10, 2) DEFAULT 0
+    total_amount DECIMAL(10, 2) DEFAULT 0,
+    Last_name varchar(255) DEFAULT '' ,
+    phone_number INT DEFAULT '0900-000000'
 );
 
 INSERT INTO tables (table_number, status, reservation_time, check_in_time)
