@@ -90,7 +90,7 @@ CREATE TABLE tables (
     check_in_time DATETIME,
     diners_count INT DEFAULT 0,
     total_amount DECIMAL(10, 2) DEFAULT 0,
-    Last_name varchar(255) DEFAULT '' ,
+    Last_name varchar(255) DEFAULT '',
     phone_number INT DEFAULT '0900-000000'
 );
 
