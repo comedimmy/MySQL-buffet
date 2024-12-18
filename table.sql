@@ -37,7 +37,7 @@ CREATE TABLE `served_orders` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO unserved_orders (food_name, quantity, table_number) VALUES 
+INSERT INTO served_orders (food_name, quantity, table_number) VALUES 
 ('烤雞腿', 1, 1);
 
 
@@ -50,37 +50,42 @@ CREATE TABLE `menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO menu(food_name, price) VALUES
-('烤雞腿', 0),
-('炒牛肉片', 0),
-('鹽烤鮭魚', 0),
-('煎豬排', 0),
-('香煎鱸魚', 0),
-('鹽水雞胸肉', 0),
-('燒烤羊排', 0),
-('義大利香草雞肉串', 0),
-('黑椒牛肉炒蘑菇', 0),
-('酥炸雞翅', 0),
-('義式香烤豬肉', 0),
-('泰式檸檬草雞肉', 0),
-('燻烤鴨胸肉', 0),
-('蜂蜜芥末雞胸肉', 0),
-('炸蝦', 0),
-('芝士焗花椰菜', 0),
-('糖醋排骨', 0),
-('香煎牛排', 0),
-('中式紅燒牛肉', 0),
-('叉燒豬肉', 0),
-('酥炸豆腐', 0),
-('香菇炒時蔬', 0),
-('蒜香小玉米', 0),
-('炒時蔬（蘆筍、紅椒、玉米等)', 0),
-('香烤番茄', 0),
-('日式醬燒茄子', 0),
-('綠豆芽炒菜心', 0),
-('韓式泡菜炒飯', 0),
-('炒時蔬米粉', 0),
-('泰式生菜包', 0);
+INSERT INTO `menu` (`food_name`, `price`) VALUES
+('板腱牛', 0),
+('雪花牛', 0),
+('肩胛牛', 0),
+('牛舌片', 0),
+('霜降牛肉', 0),
+('梅花豬', 0),
+('五花豬', 0),
+('黑豬梅花', 0),
+('松阪豬', 0),
+('培根豬', 0),
+('雞腿肉', 0),
+('雞胸肉', 0),
+('雞翅肉', 0),
+('雞皮', 0),
+('雞肉丸', 0),
+('大白菜', 0),
+('青江菜', 0),
+('茼蒿', 0),
+('菠菜', 0),
+('高麗菜', 0),
+('金針菇', 0),
+('杏鮑菇', 0),
+('香菇', 0),
+('玉米', 0),
+('豆腐', 0),
+('油豆腐', 0),
+('凍豆腐', 0),
+('海帶結', 0),
+('白蘿蔔', 0),
+('南瓜', 0),
+('紅薯', 0),
+('山藥', 0),
+('蓮藕', 0),
+('絲瓜', 0),
+('冬瓜', 0);
 
 DROP TABLE IF EXISTS `tables`;
 CREATE TABLE tables (
@@ -95,8 +100,8 @@ CREATE TABLE tables (
 );
 
 INSERT INTO tables (table_number, status, reservation_time, check_in_time)
-VALUES (1, 'occupied', NULL, '2024-12-15 19:00:00'),
-       (2, 'reserved', '2024-12-15 18:00:00', NULL),
+VALUES (1, 'vacant', NULL, NULL),
+       (2, 'vacant',NULL, NULL),
        (3, 'vacant', NULL, NULL),
        (4, 'vacant', NULL, NULL),
        (5, 'vacant', NULL, NULL),
