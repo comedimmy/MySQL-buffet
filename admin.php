@@ -432,7 +432,9 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
                     <td><?= htmlspecialchars($row['food_name']) ?></td>
                     <td><?= htmlspecialchars($row['quantity']) ?></td>
                     <td><?= htmlspecialchars($row['order_at']) ?></td>
-					<td><?= $row['is_delivered'] == 1 ? '已送達' : '未送達' ?></td>
+					<td style="color: <?= $row['is_delivered'] == 1 ? 'red' : 'black' ?>;">
+						<?= $row['is_delivered'] == 1 ? '已送達' : '未送達' ?>
+					</td>
                 </tr>
                 <?php endwhile; ?>
             </table>
