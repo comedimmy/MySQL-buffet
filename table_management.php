@@ -1,4 +1,5 @@
 <?php
+ob_start(); // 啟用緩衝輸出
 session_start();
 require 'db_connection.php'; 
 
@@ -31,13 +32,7 @@ $reservationTime = new DateTime($reservationTime);
 $timeDiff = $currentTime->diff($reservationTime);
 $timeDiffMinutes = $timeDiff->i; // 分鐘數
 
-//如果超過10分鐘，將桌位狀態更新為 'vacant'
-	//if ($timeDiffMinutes > 10 && $tableStatus === 'reserved') {
-	//	$updateStmt = $conn->prepare("UPDATE tables SET status = 'vacant' WHERE table_number = ?")	
-	//	$updateStmt->bind_param('i', $tableNumber)	
-	//	$updateStmt->execute()	
-	//	$tableStatus = 'vacant'; // 更新狀態到 'vacant'
-	//}
+
 
 //處理用餐人數設定
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_diners'])) {
@@ -60,7 +55,28 @@ $stmt = $conn->prepare("SELECT id, food_name, quantity FROM served_orders WHERE 
 $stmt->bind_param('i', $tableNumber);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// 處理「客人已離開」按鈕提交
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_table'])) {
+    $clearStmt = $conn->prepare(
+		"UPDATE tables SET 
+		last_name = '', reservation_time = NULL, phone_number = '0900-000000', diners_count = 0, total_amount = 0, status = 'vacant',check_in_time=NULL
+		WHERE table_number = ?"
+	);
+    $clearStmt->bind_param('i', $tableNumber);
+
+    if ($clearStmt->execute()) {
+        $_SESSION['message'] = "該桌已清空，狀態已更新為 vacant。";
+        header("Location: table_management.php?table_number={$tableNumber}");
+        exit();
+    } else {
+        $_SESSION['message'] = "清空資料失敗，請稍後再試。";
+        header("Location: table_management.php?table_number={$tableNumber}");
+        exit();
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -145,7 +161,7 @@ $result = $stmt->get_result();
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #a1a049;
         }
 
         /* 返回主介面按鈕 */
@@ -167,6 +183,11 @@ $result = $stmt->get_result();
         .back-button:hover {
             background-color: #e53935;
         }
+		.buttonCheck{
+			margin-top: 20px;
+			background-color: red;
+			color: white;
+		}
     </style>
 
 </head>
@@ -232,7 +253,7 @@ $result = $stmt->get_result();
 				header("Location: table_management.php?table_number={$tableNumber}");
 				exit();
 			} else {
-				echo "標記送達失敗，請稍後再試。";
+				
 			}
 		}
 	
@@ -248,6 +269,19 @@ $result = $stmt->get_result();
 		?>
 	
 		<button type="button" onclick="window.location.href='admin.php';">返回主介面</button>
+		<?php if ($tableStatus === 'occupied'): ?>
+			<form method="POST" id="clearTableForm">
+				<button class ="buttonCheck"
+					type="submit" name="clear_table"  onclick="return confirmClearTable();">
+					客人已離開
+				</button>
+			</form>
+		<?php endif; ?>
 	</div>
+	<script>
+		function confirmClearTable() {
+			return confirm("確定要清空該桌的資料嗎？此操作無法撤銷！");
+		}
+	</script>
 </body>
 </html>
