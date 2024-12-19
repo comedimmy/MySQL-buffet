@@ -1,8 +1,9 @@
 <?php
 session_start();
 require 'db_connection.php';
-
+date_default_timezone_set('Asia/Taipei'); // 設定時區
 // 處理訂位表單提交
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
     $lastName = $_POST['last_name']; // 貴姓
     $reservationTime = $_POST['reservation_time']; // 預定時間
@@ -11,15 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
     $tableNumber = $_GET['table_number']; // 桌號
 	$totalAmount = $diners * 399;
     // 檢查姓氏是否為單一字元
-    if (mb_strlen($lastName, 'UTF-8') !== 1) {
-        $_SESSION['message'] = "貴姓必須為一個字。";
-        header("Location: book_a_table.php?table_number={$tableNumber}");
-        exit();
-    }
-
-    // 檢查預定時間是否不超過現在時間
-    if (strtotime($reservationTime) < time()) {
-        $_SESSION['message'] = "預定時間不能早於現在的時間。";
+    if (mb_strlen($lastName, 'UTF-8') > 4) {
+        $_SESSION['message'] = "貴姓必須為兩個字內。";
         header("Location: book_a_table.php?table_number={$tableNumber}");
         exit();
     }
@@ -55,7 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
 		header("Location: book_a_table.php?table_number={$tableNumber}");
 		exit();
 	}
+
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -113,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
             font-size: 16px;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #a1a049;
         }
         .back-button {
             margin-top: 10px;
@@ -131,11 +127,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
     <script>
         // JavaScript 檢查姓氏的長度，限制輸入一個字
         function checkLastNameLength(input) {
-            if (input.value.length > 1) {
-                alert("貴姓必須為一個字。");
+            if (input.value.length > 4) {
+                alert("貴姓必須為兩個字內。");
                 input.value = input.value.slice(0, 1); // 只保留第一個字
             }
         }
+		
+        document.addEventListener('DOMContentLoaded', function () {
+            const now = new Date();
+
+            // 格式化本地時間為 YYYY-MM-DDTHH:MM
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            const localDatetime = `${year}-${month}-${date}T${hours}:${minutes}`;
+
+            // 設置最小值
+            const dateTimeInput = document.getElementById('reservation_time');
+            dateTimeInput.min = localDatetime;
+        });
     </script>
 </head>
 <body>
@@ -153,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
         <input type="text" id="last_name" name="last_name" maxlength="1" required oninput="checkLastNameLength(this)">
 
         <label for="reservation_time">預定時間</label>
-        <input type="datetime-local" id="reservation_time" name="reservation_time" required>
+        <input type="datetime-local" id="reservation_time" name="reservation_time"   required>
 
         <label for="phone_number">電話號碼</label>
         <input type="text" id="phone_number" name="phone_number" required placeholder="09xx-xxx-xxx" 
