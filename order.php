@@ -469,7 +469,9 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 
     <h1>歡迎 <?= htmlspecialchars($_SESSION['username']) ?>！</h1>
 	<a href="Check_out.php">
-    <button class="buttonCheck">結帳</button>
+    <button class="buttonCheck" type="button" onclick="window.location.href='Check_out.php?table_number=<?= $_GET['table_number'] ?>';">
+        結帳
+    </button>
     </a>
     <a href="logout.php">
     <button class="logout-btn">登出</button>
