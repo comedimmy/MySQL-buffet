@@ -63,7 +63,7 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
             cursor: pointer;
         }
         .view-reserved-button:hover {
-            background-color: #45a049;
+            background-color: #a1a049;
         }
 		
 		.login-container {
@@ -134,7 +134,7 @@ $tables = $result->fetch_all(MYSQLI_ASSOC);
             cursor: pointer;
         }
         .back-button:hover {
-            background-color: #45a049;
+            background-color: #a1a049;
         }
     </style>
 </head>
