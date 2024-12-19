@@ -275,6 +275,14 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
         .modal-form button:hover {
             background-color: #0056b3;
         }
+		.buttonCheck{
+			margin-top: 20px;
+			background-color: red;
+			color: white;
+		}
+		.buttonCheck:hover{
+            background-color: #a1a049;
+		}
     </style>
 
     <script>
@@ -369,7 +377,8 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 
     
         <!-- 左側: 菜單 -->
-        <div class="section">
+	<div class = "container">
+		<div class="section">
             <h2>菜單</h2>
             <table>
                 <tr>
@@ -431,12 +440,14 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
                     <td><?= htmlspecialchars($row['food_name']) ?></td>
                     <td><?= htmlspecialchars($row['quantity']) ?></td>
                     <td><?= htmlspecialchars($row['order_at']) ?></td>
-					<td><?= $row['is_delivered'] == 1 ? '已送達' : '未送達' ?></td>
+					<td style="color: <?= $row['is_delivered'] == 1 ? 'red' : 'black' ?>;">
+						<?= $row['is_delivered'] == 1 ? '已送達' : '未送達' ?>
+					</td>
                 </tr>
                 <?php endwhile; ?>
             </table>
         </div>
-  
+	</div>
 
     <!-- 彈跳視窗 -->
     <div id="modal" class="modal">
@@ -457,9 +468,13 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
     </div>
 
     <h1>歡迎 <?= htmlspecialchars($_SESSION['username']) ?>！</h1>
+	<a href="Check_out.php">
+    <button class="buttonCheck">結帳</button>
+    </a>
     <a href="logout.php">
     <button class="logout-btn">登出</button>
     </a>
+	
 </body>
 </html>
 
