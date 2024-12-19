@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
         function checkLastNameLength(input) {
             if (input.value.length > 4) {
                 alert("貴姓必須為兩個字內。");
-                input.value = input.value.slice(0, 1); // 只保留第一個字
+                input.value = input.value.slice(1, 1); // 只保留第一或兩個字
             }
         }
 		
@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_table'])) {
 
     <form method="POST">
         <label for="last_name">貴姓</label>
-        <input type="text" id="last_name" name="last_name" maxlength="1" required oninput="checkLastNameLength(this)">
+        <input type="text" id="last_name" name="last_name" maxlength="2" required oninput="checkLastNameLength(this)">
 
         <label for="reservation_time">預定時間</label>
         <input type="datetime-local" id="reservation_time" name="reservation_time"   required>
