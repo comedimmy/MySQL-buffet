@@ -304,7 +304,7 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 
        
 				// 倒數計時的邏輯
-       document.addEventListener('DOMContentLoaded', function () {
+			document.addEventListener('DOMContentLoaded', function () {
             const checkInTime = new Date("<?= $checkInTime ?>").getTime(); // 從 PHP 獲取 check_in_time
             const countDownDuration = 90* 60 * 1000; // 90 分鐘 (毫秒)
 
@@ -358,7 +358,6 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 						alert("時間已超過60分，無法進行點餐！");
 					}
 				}
-				
             }
 			
 
@@ -366,7 +365,11 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
             const timer = setInterval(updateCountdown, 1000); // 每秒更新一次
         });
 
-
+		function confirmClearTable() {
+			return confirm("確定要結帳嗎？此操作無法返回！");		
+			header("Location: table_management.php?table_number={$tableNumber}");
+			exit();
+		}
     </script>
 	
 </head>
@@ -469,14 +472,11 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 
     <h1>歡迎 <?= htmlspecialchars($_SESSION['username']) ?>！</h1>
 	<a href="Check_out.php">
-    <button class="buttonCheck" type="button" onclick="window.location.href='Check_out.php?table_number=<?= $_GET['table_number'] ?>';">
+    <button class="buttonCheck" type="button" onclick="return confirmClearTable();">
         結帳
     </button>
-    </a>
-    <a href="logout.php">
-    <button class="logout-btn">登出</button>
-    </a>
-	
+
+		
 </body>
 </html>
 
