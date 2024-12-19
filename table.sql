@@ -15,7 +15,8 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO users(username,password,is_admin,email) VALUES
-(11124235,'Zx0920520',1,'zx0989030601@gmail.com');
+(11124235,'Zx0920520',1,'zx0989030601@gmail.com'),
+(11124213,'Zx0920520',0,'11124213@nhu.edu.tw');
 
 DROP TABLE IF EXISTS `unserved_orders`;
 CREATE TABLE `unserved_orders` (
