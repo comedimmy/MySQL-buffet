@@ -126,11 +126,6 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
     echo "時間已到，無法提交訂單！";
     exit();
 }
-
-
-
-
-
 ?>
 <html lang="en">
 <head>
@@ -372,7 +367,7 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
     <h1>吃到飽點餐系統</h1>
     <p class="timer">用餐剩餘時間：<span id="countdown"></span></p>
 
-    <div class="container">
+    
         <!-- 左側: 菜單 -->
         <div class="section">
             <h2>菜單</h2>
@@ -394,9 +389,9 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
             </table>
         </div>
 
-        <!-- 中間: 未出餐訂單 -->
+        <!-- 中間: 未送出訂單 -->
         <div class="section">
-            <h2>未出餐訂單</h2>
+            <h2>未送出訂單</h2>
             <table>
                 <tr>
                     <th>餐點名稱</th>
@@ -421,25 +416,27 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
             </form>
         </div>
 
-        <!-- 右側: 已出餐訂單 -->
+        <!-- 右側: 已送出訂單 -->
         <div class="section">
-            <h2>已出餐訂單</h2>
+            <h2>已送出訂單</h2>
             <table>
                 <tr>
                     <th>餐點名稱</th>
                     <th>數量</th>
                     <th>出餐時間</th>
+					<th>餐點進度</th>
                 </tr>
                 <?php while ($row = $servedResult->fetch_assoc()): ?>
                 <tr>
                     <td><?= htmlspecialchars($row['food_name']) ?></td>
                     <td><?= htmlspecialchars($row['quantity']) ?></td>
                     <td><?= htmlspecialchars($row['order_at']) ?></td>
+					<td><?= $row['is_delivered'] == 1 ? '已送達' : '未送達' ?></td>
                 </tr>
                 <?php endwhile; ?>
             </table>
         </div>
-    </div>
+  
 
     <!-- 彈跳視窗 -->
     <div id="modal" class="modal">
