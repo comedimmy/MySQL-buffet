@@ -10,7 +10,12 @@ $currentTimestamp = $now->format('Y-m-d H:i:s');
 // 更新所有已超過 10 分鐘的 reserved 桌位為 vacant
 $stmtUpdateExpired = $conn->prepare("
     UPDATE tables 
-    SET status = 'vacant', reservation_time = NULL, check_in_time = NULL, diners_count = 0, total_amount = 0, Last_name = '', phone_number = '0900-000000' 
+    SET status = 'vacant', reservation_time = NULL, 
+		check_in_time = NULL, 
+		diners_count = 0, 
+		total_amount = 0, 
+		Last_name = '', 
+		phone_number = '0900-000000' 
     WHERE status = 'reserved' 
     AND TIMESTAMPDIFF(MINUTE, reservation_time, ?) >= 10
 ");
@@ -20,7 +25,13 @@ $stmtUpdateExpired->execute();
 // 更新所有已經超過 1 小時且 30 分鐘的桌位狀態為 'vacant'
 $stmtUpdate = $conn->prepare("
     UPDATE tables 
-    SET total_amount = 0, status = 'vacant', diners_count = 0, reservation_time = NULL, check_in_time = NULL, Last_name = '', phone_number = '0900-000000' 
+    SET total_amount = 0,
+	status = 'vacant', 
+	diners_count = 0, 
+	reservation_time = NULL,
+	check_in_time = NULL, 
+	Last_name = '', 
+	phone_number = '0900-000000' 
     WHERE status = 'occupied' 
     AND (
         TIMESTAMPDIFF(HOUR, check_in_time, ?) > 1 OR 
