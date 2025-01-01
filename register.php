@@ -23,7 +23,7 @@ if (isset($_POST['register'])) {
         echo '<script>
                 setTimeout(function() {
                     window.location.href = "register.php";
-                }, 1500); // 延遲 1 秒後跳轉
+                }, 1500); // 延遲 1.5 秒後跳轉
             </script>';
         exit(); // 停止執行 PHP
     }
