@@ -15,14 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         // 從資料庫驗證用戶
-        $stmt = $conn->prepare("SELECT id, password, is_admin FROM users WHERE username = ?");
-        $stmt->bind_param('s', $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $stmt = $conn->prepare("
+			SELECT id, password, is_admin FROM users 
+			WHERE username = ?"
+		);//使用prepare語句讓查詢較為安全 不會被惡意輸入 且可以提高性能 增加可讀性等等
+        $stmt->bind_param('s', $username);//將上方prepare語句的"?"填入$username
+        $stmt->execute();//執行stmt
+        $result = $stmt->get_result();//獲取查詢結果
 
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            if ($password === $user['password']) {
+        if ($result->num_rows > 0) { //如果查詢結果有東西的話 也就是帳號有在資料庫裡的話
+            $user = $result->fetch_assoc();//就將result結果放入$user陣列當中
+            if ($password === $user['password']) { //檢查密碼 
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $username;
 
@@ -92,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cursor: pointer;
         }
         button[type="submit"]:hover {
-            background-color: #4cae4c;
+            background-color: #a1a049;
         }
         .guest-btn {
             background-color: #f0ad4e;
