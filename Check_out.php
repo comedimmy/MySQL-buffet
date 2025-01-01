@@ -24,7 +24,7 @@ $totalAmount = $result->fetch_assoc()['total_amount'] ?? 0;
 // 如果使用者不是訪客，計算打九折的金額
 $discountMessage = '';
 if (isset($_SESSION['username']) && $_SESSION['username'] !== '訪客') {
-    $totalAmount = round($totalAmount * 0.9, 0); // 打九折並四捨五入到小數點後兩位
+    $totalAmount = round($totalAmount * 0.9, 0); // 打九折並四捨五入至零位
     $discountMessage = '套用會員優惠九折！'; // 顯示折扣訊息
 }
 
@@ -32,7 +32,12 @@ if ($tableNumber) {
     // 清除總金額、已出餐清單和未出餐清單
     $stmt3 = $conn->prepare(
 	"UPDATE tables SET 
-	total_amount = 0,status='vacant', diners_count=0,reservation_time=NULL,check_in_time=NULL,Last_name='' ,phone_number='0900-000000'
+		total_amount = 0,status='vacant',
+		diners_count=0,
+		reservation_time=NULL,
+		check_in_time=NULL,
+		Last_name='' ,
+		phone_number='0900-000000'
 	WHERE table_number = ?"
 	);
     $stmt3->bind_param('i', $tableNumber);
@@ -105,8 +110,8 @@ if ($tableNumber) {
     </style>
 </head>
 <body>
-    <h1>請至櫃檯結帳</h1>
-    <h2>桌號：<?= htmlspecialchars($_SESSION['table_number']) ?></h2>
+    <h1>請出示本畫面至櫃檯結帳</h1>
+    <h2>桌號：<?= ($_SESSION['table_number']) ?></h2>
 
     <?php if ($discountMessage): ?>
         <p class="discount-message"><?= $discountMessage ?></p>
@@ -120,14 +125,18 @@ if ($tableNumber) {
         </tr>
         <?php while ($row = $servedResult->fetch_assoc()): ?>
         <tr>
-            <td><?= htmlspecialchars($row['food_name']) ?></td>
-            <td><?= htmlspecialchars($row['quantity']) ?></td>
+            <td><?= ($row['food_name']) ?></td>
+            <td><?= ($row['quantity']) ?></td>
         </tr>
         <?php endwhile; ?>
     </table>
 
-    <p>應付金額： <span class="amount">NT$ <?= htmlspecialchars($totalAmount) ?></span></p>
+    <p>應付金額： <span class="amount">NT$ <?= ($totalAmount) ?></span></p>
     <p><?= $message ?></p>
-    <button class="back-button" type="button" onclick="window.location.href='index.php';">返回登入畫面</button>
+		<button class="back-button" 
+				type="button" 
+				onclick="window.location.href='logout.php';">
+				返回登入畫面
+		</button>
 </body>
 </html>
