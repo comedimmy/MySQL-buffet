@@ -2,7 +2,7 @@
 session_start();
 
 if (isset($_GET['table_number'])) {
-    $tableNumber = intval($_GET['table_number']); // 確保桌號是整數
+    $tableNumber = $_GET['table_number']; // 確保桌號是整數
     $_SESSION['table_number'] = $tableNumber; // 將桌號存入 session
 } else if (isset($_SESSION['table_number'])) {
     $tableNumber = $_SESSION['table_number']; // 從 session 中獲取桌號
@@ -13,9 +13,6 @@ if (isset($_GET['table_number'])) {
 $tableNumber = $_SESSION['table_number'];
 // 連接資料庫
 require 'db_connection.php';
-
-
-	
 
 // 處理提交訂單
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_food'])) {
@@ -42,19 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['serve_all'])) {
     // 將所有未出餐訂單插入到已出餐訂單
     $insertStmt = $conn->prepare("INSERT INTO served_orders (food_name, quantity, table_number, order_at) VALUES (?, ?, ?, NOW())");
 
-    // 使用一個變數來追蹤是否有插入錯誤
-    $hasError = false;
-
     while ($row = $result->fetch_assoc()) {
         $insertStmt->bind_param('sii', $row['food_name'], $row['quantity'], $row['table_number']);
         if (!$insertStmt->execute()) {
-            $hasError = true;
             break;
         }
     }
 
-    // 如果插入成功，刪除未出餐訂單中的紀錄
-    if (!$hasError) {
+		// 如果插入成功，刪除未出餐訂單中的紀錄
         $deleteStmt = $conn->prepare("DELETE FROM unserved_orders WHERE table_number = ?");
         $deleteStmt->bind_param('i', $tableNumber);
         if ($deleteStmt->execute()) {
@@ -62,16 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['serve_all'])) {
         } else {
             echo "刪除未出餐訂單時發生錯誤，請稍後再試。";
         }
-    } else {
-        echo "移動未出餐訂單時發生錯誤，請稍後再試。";
-    }
+
 }
 
-$stmt = $conn->prepare("SELECT id, food_name, quantity FROM unserved_orders WHERE table_number = ?");
-$stmt->bind_param('i', $tableNumber);
-$stmt->execute();
-$result = $stmt->get_result();
-$orders = $result->fetch_all(MYSQLI_ASSOC);
 
 	// 處理移除訂單的請求
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_order'])) {
@@ -82,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_order'])) {
 	$deleteStmt->bind_param('i', $orderId);
 	if ($deleteStmt->execute()) {
 		echo "訂單已移除！";
-		// 刪除後重新載入頁面
 	} else {
 		echo "刪除訂單失敗：" . $deleteStmt->error;
 	}
@@ -105,10 +89,16 @@ if ($row = $result->fetch_assoc()) {
 $menuResult = $conn->query("SELECT * FROM menu");
 
 // 讀取已出餐訂單
-$servedResult = $conn->query("SELECT * FROM served_orders where table_number={$tableNumber}");
+$servedResult = $conn->query("
+	SELECT * FROM served_orders 
+	where table_number={$tableNumber}
+	");
 
 // 讀取未出餐訂單
-$unservedResult = $conn->query("SELECT * FROM unserved_orders where table_number={$tableNumber}");
+$unservedResult = $conn->query("
+	SELECT * FROM unserved_orders 
+	where table_number={$tableNumber}
+	");
 
 // 更新倒計時
 if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] > 0) {
@@ -119,7 +109,6 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] > 0) {
 } else {
     $canOrder = false; // 禁止點餐
 }
-
 
 // 確認剩餘時間
 if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
@@ -304,14 +293,14 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 
        
 				// 倒數計時的邏輯
-			document.addEventListener('DOMContentLoaded', function () {
-            const checkInTime = new Date("<?= $checkInTime ?>").getTime(); // 從 PHP 獲取 check_in_time
+		document.addEventListener('DOMContentLoaded', function () {
+            const checkInTime = new Date("<?= $checkInTime ?>").getTime(); // 從 PHP 獲取 check_in_time(時間戳函數)
             const countDownDuration = 90* 60 * 1000; // 90 分鐘 (毫秒)
 
             function updateCountdown() {
                 const now = new Date().getTime();
-                const elapsed = now - checkInTime;
-                const remaining = countDownDuration - elapsed;
+                const elapsed = now - checkInTime; 
+                const remaining = countDownDuration - elapsed; 
 
                 if (remaining > 0) {
 					const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); // 計算小時
@@ -321,20 +310,6 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
                     document.getElementById('countdown').textContent = `${hours} 小時 ${minutes} 分 ${seconds} 秒`;
                 } else{
                     document.getElementById('countdown').textContent = "已超過 90 分鐘！";
-
-					
-					// 隱藏按鈕
-						const selectButtons = document.querySelectorAll('button[onclick^="showModal"]'); // 選擇按鈕
-						const serveAllButton = document.querySelector('button[name="serve_all"]'); // 全部出餐按鈕
-				
-						selectButtons.forEach(button => {
-							button.style.display = 'none'; // 隱藏選擇按鈕
-						});
-				
-						if (serveAllButton) {
-							serveAllButton.style.display = 'none'; // 隱藏全部出餐按鈕
-						}
-					
 							window.location.href = "Check_out.php";
                 }
 				
@@ -367,7 +342,6 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
 
 		function confirmClearTable() {
 			return confirm("確定要結帳嗎？此操作無法返回！");		
-			header("Location: table_management.php?table_number={$tableNumber}");
 			exit();
 		}
     </script>
@@ -424,7 +398,10 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
                 <?php endwhile; ?>
             </table>
             <form method="POST">
-                <button type="submit" name="serve_all" <?php if ($unservedResult->num_rows == 0) echo 'style="display:none;"'; ?>>全部出餐</button>
+                <button type="submit" name="serve_all" <?php 
+					if ($unservedResult->num_rows == 0) 
+						echo 'style="display:none;"'; 
+					?>>全部出餐</button>
             </form>
         </div>
 
@@ -440,9 +417,9 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
                 </tr>
                 <?php while ($row = $servedResult->fetch_assoc()): ?>
                 <tr>
-                    <td><?= htmlspecialchars($row['food_name']) ?></td>
-                    <td><?= htmlspecialchars($row['quantity']) ?></td>
-                    <td><?= htmlspecialchars($row['order_at']) ?></td>
+                    <td><?= ($row['food_name']) ?></td>
+                    <td><?= ($row['quantity']) ?></td>
+                    <td><?= ($row['order_at']) ?></td>
 					<td style="color: <?= $row['is_delivered'] == 1 ? 'red' : 'black' ?>;">
 						<?= $row['is_delivered'] == 1 ? '已送達' : '未送達' ?>
 					</td>
@@ -461,7 +438,7 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
                 <input type="hidden" id="food_name" name="food_name">
                 <label for="quantity">數量：</label>
                 <select id="quantity" name="quantity" required>
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                    <?php for ($i = 1; $i <= 3; $i++): ?>
                     <option value="<?= $i ?>"><?= $i ?></option>
                     <?php endfor; ?>
                 </select>
@@ -475,8 +452,5 @@ if (isset($_SESSION['remaining_time']) && $_SESSION['remaining_time'] <= 0) {
     <button class="buttonCheck" type="button" onclick="return confirmClearTable();">
         結帳
     </button>
-
-		
 </body>
 </html>
-
