@@ -40,7 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_diners'])) {
     $totalAmount = $diners * 399; // 計算金額，假設每人399元
 
     // 更新該桌的用餐狀況和人數
-    $stmt = $conn->prepare("UPDATE tables SET status = 'occupied', diners_count = ?, total_amount = ?, check_in_time = now() WHERE table_number = ?");
+    $stmt = $conn->prepare(
+		"UPDATE tables SET status = 'occupied', 
+				diners_count = ?, 
+				total_amount = ?, 
+				check_in_time = now() 
+				WHERE table_number = ?"
+		);
     $stmt->bind_param('iii', $diners, $totalAmount, $tableNumber);
     if ($stmt->execute()) {
         header("Location: table_management.php?table_number={$tableNumber}");
@@ -51,7 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_diners'])) {
 }
 
 // 查詢該桌未送達的餐點
-$stmt = $conn->prepare("SELECT id, food_name, quantity FROM served_orders WHERE table_number = ? AND is_delivered = 0");
+$stmt = $conn->prepare("
+	SELECT id, food_name, quantity FROM served_orders 
+	WHERE table_number = ? 
+	AND is_delivered = 0 
+	");
 $stmt->bind_param('i', $tableNumber);
 $stmt->execute();
 $result = $stmt->get_result();
